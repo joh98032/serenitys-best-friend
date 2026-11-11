@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2a3550">
+<title>Serenity's Best Friend</title>
+<meta name="author" content="Kaya and Keira, with the help of Ben">
+<meta name="description" content="An animated, read-aloud storybook about Serenity the Labubu and her new friend Love.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Serenity">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/book.css">
+</head>
+<body>
+<div id="app">
+  <div id="stage" aria-hidden="true"></div>
+  <div id="grain"></div>
+
+  <button class="nav nav-prev" id="btn-prev" aria-label="Previous page">
+    <svg viewBox="0 0 24 24"><path d="M15 4 7 12l8 8"/></svg>
+  </button>
+  <button class="nav nav-next" id="btn-next" aria-label="Next page">
+    <svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8"/></svg>
+  </button>
+
+  <div id="caption" aria-live="polite"><div id="caption-text"></div></div>
+
+  <div id="topbar">
+    <button id="counter" class="pill" aria-label="Show all pages"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span id="counter-n">1 / 26</span></button>
+    <div class="tools">
+      <button class="tool" id="btn-play" aria-label="Pause">
+        <svg class="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg>
+        <svg class="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" class="fill"/></svg>
+      </button>
+      <button class="tool" id="btn-replay" aria-label="Read this page again">
+        <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg>
+      </button>
+      <button class="tool" id="btn-auto" aria-label="Auto turn pages" aria-pressed="true">
+        <span class="auto-label">AUTO</span>
+      </button>
+      <button class="tool" id="btn-mute" aria-label="Mute">
+        <svg class="i-sound" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" class="fill"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+        <svg class="i-muted" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" class="fill"/><path d="M17 9l5 6M22 9l-5 6"/></svg>
+      </button>
+      <button class="tool" id="btn-settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>
+      </button>
+      <button class="tool" id="btn-full" aria-label="Full screen">
+        <svg viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="settings" class="sheet" hidden>
+    <div class="sheet-card">
+      <h2>Settings</h2>
+      <label class="row">Voice
+        <select id="set-voice"></select>
+      </label>
+      <label class="row">Reading speed
+        <input id="set-rate" type="range" min="0.6" max="1.3" step="0.05">
+      </label>
+      <label class="row">Pause before page turn
+        <input id="set-pause" type="range" min="0.5" max="5" step="0.5">
+      </label>
+      <label class="row">Text size
+        <select id="set-text"><option value="normal">Normal</option><option value="large">Large</option><option value="huge">Extra large</option></select>
+      </label>
+      <label class="row">Visual effects
+        <select id="set-fx"><option value="auto">Automatic</option><option value="full">Full (shadows &amp; sparkles)</option><option value="lite">Light (for slower devices)</option></select>
+      </label>
+      <label class="row">Music volume
+        <input id="set-music" type="range" min="0" max="1" step="0.05">
+      </label>
+      <label class="row">Sound effects volume
+        <input id="set-sfx" type="range" min="0" max="1" step="0.05">
+      </label>
+      <label class="row check"><input id="set-voiceon" type="checkbox"> Read aloud</label>
+      <label class="row check"><input id="set-tilt" type="checkbox"> Tilt device for 3D effect</label>
+      <div class="row jump">Go to page
+        <select id="set-page"></select>
+      </div>
+      <div class="row offline">Read without internet
+        <span id="offline-status" class="offline-status">Checking…</span>
+        <button class="link" id="btn-install" hidden>📥 Save to this device</button>
+        <span id="install-hint" class="install-hint" hidden></span>
+      </div>
+      <button class="big" id="set-close">Done</button>
+    </div>
+  </div>
+
+  <div id="pages" class="sheet" hidden>
+    <div class="pages-card">
+      <div class="pages-head"><h2>Pages</h2><button class="tool" id="pages-close" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+      <div id="thumbs" class="thumbs"></div>
+    </div>
+  </div>
+
+  <div id="start" class="sheet">
+    <div class="start-card">
+      <div class="start-title">Serenity's Best Friend</div>
+      <div class="start-byline">Written by Kaya and Keira<br>with the help of Ben</div>
+      <button class="big" id="btn-begin">
+        <svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" class="fill"/></svg>
+        Read the story
+      </button>
+      <button class="link" id="btn-continue" hidden>Continue from page <span id="continue-n"></span></button>
+      <div class="hint">Turn your sound on 🔊</div>
+      <button class="link" id="btn-install-start" hidden>📥 Save to this device for offline reading</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/util.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/narrator.js"></script>
+<script src="js/art/parts.js"></script>
+<script src="js/art/parts2.js"></script>
+<script src="js/art/scenes.js"></script>
+<script src="js/art/scenes2.js"></script>
+<script src="js/story.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/offline.js"></script>
+</body>
+</html>
